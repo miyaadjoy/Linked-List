@@ -1,277 +1,293 @@
-#include<iostream>
-#include<cstdlib>
-#include<cstring>
+#include <iostream>
+
 using namespace std;
-struct list
-{
-    struct list* next;
-    int data;
-};
-typedef struct list node;
 
-node* head = NULL;
-node* tail = NULL;
-
-void createList()
+class List
 {
     int data;
-    cout<<"\tEnter values (enter -1 to exit) : ";
-    while(true)
+    List* next;
+public:
+    List()
     {
-        cin>>data;
-        if(data == -1)
-            break;
+        data = 0;
+        next  = nullptr;
+    }
+    static void createList(int value);
+    static void displayList();
+    static List* createNewNode();
+    static void insertValueBefore(int elementToInsertBefore, int value) ;
+    static void insertValueAfter(int elementToInsertAfter, int value);
+    static void deleteValue(int value);
+    static void reverseList();
+};
 
-        node* new_node;
-        new_node = (node *) malloc(sizeof(node));
-        new_node->data = data;
-        new_node->next = NULL;
+List* head = nullptr;
+List* tail = nullptr;
 
-        if(head == NULL)
+
+void List ::  createList(int value)
+{
+    List* newNode = createNewNode();
+    newNode -> data = value;
+
+    if(head == nullptr)
+    {
+        head = newNode;
+
+    }
+
+    else
+    {
+        tail -> next = newNode;
+    }
+
+    tail = newNode;
+
+}
+
+void List ::displayList()
+{
+    List* p = head;
+    while(p != nullptr)
+    {
+        cout<<p -> data<<" ";
+        p = p -> next;
+    }
+    cout<<endl;
+
+}
+List* List ::createNewNode()
+{
+    List* newNode;
+    newNode = new List[sizeof(List)];
+    newNode -> next = nullptr;
+    return newNode;
+}
+
+void List :: insertValueBefore(int elementToInsertBefore, int value)
+{
+    //inserting in the first node
+    List* newNode = createNewNode();
+    newNode -> data = value;
+    if(elementToInsertBefore == head -> data)
+    {
+        newNode -> next = head;
+        head = newNode;
+    }
+        // inserting in any other position
+
+    else
+    {
+        List* p = head;
+        int flag = 0;
+        while (p->next-> data != elementToInsertBefore)
         {
-            head = new_node;
+            p = p -> next;
+            if(p -> next == nullptr)
+            {
+                cout<<"\tThe element could not be found!"<<endl;
+                flag = -1;
+                break;
+            }
+
+        }
+        if(flag != -1)
+        {
+            newNode -> next = p -> next;
+            p -> next = newNode;
+        }
+    }
+}
+
+void List :: insertValueAfter(int elementToInsertAfter, int value)
+{
+    List* newNode = createNewNode();
+    newNode -> data = value;
+    List* p = head;
+    int flag = 0;
+    while(p -> next != nullptr)
+    {
+        if(p -> data == elementToInsertAfter)
+        {
+            flag++;
+            break;
+        }
+
+        p = p -> next;
+
+    }
+    if(flag == 0)
+    {
+        cout<<"\tThe element is not found!"<<endl;
+    }
+    else
+    {
+        newNode -> next = p -> next;
+        p -> next = newNode;
+    }
+
+}
+
+void List :: deleteValue(int value)
+{
+    List* p = head;
+    int flag = 0;
+    //deleting the first element
+    if(value == head -> data)
+    {
+        head = head -> next;
+    }
+        //deleting any other element
+
+    else
+    {
+        while(p->next != nullptr)
+        {
+            if(p -> next -> data == value)
+            {
+                flag++;
+                break;
+            }
+            p = p -> next;
+        }
+
+        if(flag == 0)
+        {
+            cout<<"\tThe element is not found!"<<endl;
         }
         else
         {
-
-            tail->next = new_node;
-
+            p -> next = p -> next -> next;
         }
-
-        tail = new_node;
     }
 }
-void printList()
+
+void List :: reverseList()
 {
-    node* Q;
-    Q = head;
-    cout<<"\tThe list: ";
-    while(Q != NULL)
+    List* p = head;
+    List* q = p -> next;
+    List* r = q -> next;
+
+    while(r != nullptr)
     {
-        cout<<Q->data<<" ";
-        Q = Q->next;
-
-
-    }
-    cout<<endl<<endl;
-}
-void beforeValue()
-{
-    int value;
-    int n;
-    cout<<"\tEnter the value to be inserted : ";
-    cin>>value;
-    cout<<endl;
-    cout<<"\tEnter the value to insert before : ";
-    cin>>n;
-    cout<<endl;
-
-
-    //creating a new Node
-    node* new_node;
-    new_node = (node *) malloc(sizeof(node));
-
-    new_node->next = NULL;
-
-    node* Q;
-    Q = head;
-
-
-    if(n == Q->data)
-    {
-        new_node->data = value;
-        new_node->next = head;
-        head = new_node;
-    }
-    else
-    {
-        while(Q != NULL)
-        {
-            if(Q->next->data == n)
-                break;
-            Q = Q->next;
-
-        }
-        if(Q == NULL)
-        {
-            cout<<"The value is not found"<<endl<<endl;
-            return;
-
-        }
-
-        new_node->data = value;
-        new_node->next = Q->next;
-        Q->next = new_node;
-    }
-
-}
-
-void afterValue()
-{
-    int value;
-    int n;
-    cout<<"\tEnter the value to be inserted : ";
-    cin>>value;
-    cout<<endl;
-    cout<<"\tEnter the value to insert after : ";
-    cin>>n;
-    cout<<endl;
-
-    //creating a new Node
-    node* new_node;
-    new_node = (node *) malloc(sizeof(node));
-
-    new_node->next = NULL;
-
-
-    node* Q;
-    Q = head;
-
-    while(Q != NULL)
-    {
-        if(Q->data == n)
-            break;
-
-
-        Q = Q->next;
-    }
-    if(Q == NULL)
-    {
-        cout<<"The value is not found"<<endl<<endl;
-        return;
-    }
-
-    new_node->data = value;
-    new_node->next = Q->next;
-    Q->next = new_node;
-}
-
-void reverseList()
-{
-    node* p;
-    node* q;
-    node* r;
-
-    p = head;
-
-    q = p->next;
-    r = p->next->next;
-
-    while(q != NULL)
-    {
-        q->next = p;
+        q -> next = p;
         p = q;
         q = r;
-        if(r != NULL)
-            r = r->next;
+        r = r -> next;
     }
-    head->next = NULL;
-    head = tail;
-    node* t;
-    t = head;
-    head = tail;
-    tail = t;
-}
-
-
-void deleteElement()
-{
-    node* Q;
-    Q = head;
-    int value;
-    cout<<"\tEnter a value to delete : ";
-    cin>>value;
-    cout<<endl;
-
-    if(value == head->data)
-    {
-        head = head->next;
-    }
-    else
-    {
-        while(Q != NULL)
-        {
-            if(Q->next->data == value)
-                break;
-
-            Q = Q->next;
-        }
-        Q->next = Q->next->next;
-    }
-
+    q -> next = p;
+    head -> next = nullptr;
+    head = q;
 }
 
 int main()
 {
-    char ch;
 
+
+    int choice;
+    List ob;
+    int value;
 
     main:
-    cout<<"\t\t\tmain menu"<<endl<<endl<<endl;
-    cout<<"\t[1] create a list"<<endl;
-    cout<<"\t[2] insert a new value before a specific value"<<endl;
-    cout<<"\t[3] insert a new value after a specific value"<<endl;
-    cout<<"\t[4] reverse a list"<<endl;
-    cout<<"\t[5] print the list"<<endl;
-    cout<<"\t[6] delete an element"<<endl;
+    cout<<endl;
+    cout<<endl;
+    cout<<"\t\t\tmain menu"<<endl;
+    cout<<"\t\t\t_________"<<endl;
+    cout<<endl;
+    cout<<endl;
+    cout<<"\t[1] create list"<<endl;
+    cout<<"\t[2] display list"<<endl;
+    cout<<"\t[3] insert a value before an specific element"<<endl;
+    cout<<"\t[4] insert a value after an specific element"<<endl;
+    cout<<"\t[5] delete an element"<<endl;
+    cout<<"\t[6] reverse the list"<<endl;
+
 
     cout<<"\tEnter your choice : ";
-    cin>>ch;
-    cout<<endl;
-
-    switch(ch)
+    cin>>choice;
+    switch (choice)
     {
-        case '1':
-            createList();
-            cout<<"\tenter 0 to exit 1 for main menu : ";
-            cin>>ch;
-            if(ch == '1')
+        case 1:
+            cout<<"\tEnter the list values (-1 to exit) : ";
+            while(true)
+            {
+                cin>>value;
+                if (value == -1)
+                    break;
+                ob.createList(value);
+
+            }
+
+            cout<<"\tpress \"1\" for main menu or \"0\" to exit : ";
+            cin>>choice;
+            if(choice == 1)
                 goto main;
             else break;
 
-        case '2':
-            beforeValue();
-            cout<<"\tenter 0 to exit 1 for main menu : ";
-            cin>>ch;
-            if(ch == '1')
+        case 2:
+            cout<<"\tThe list : ";
+            ob.displayList();
+
+            cout<<"\tpress \"1\" for main menu or \"0\" to exit : ";
+            cin>>choice;
+            if(choice == 1)
                 goto main;
             else break;
 
-        case '3':
-            afterValue();
-            cout<<"\tenter 0 to exit 1 for main menu : ";
-            cin>>ch;
-            if(ch == '1')
+        case 3:
+            int elementToInsertBefore;
+
+            cout<<"\tEnter the value to insert : ";
+            cin>>value;
+            cout<<"\tEnter the element to insert before : ";
+            cin>>elementToInsertBefore;
+            ob.insertValueBefore(elementToInsertBefore, value);
+
+            cout<<"\tpress \"1\" for main menu or \"0\" to exit : ";
+            cin>>choice;
+            if(choice == 1)
                 goto main;
             else break;
 
-        case '4':
-            reverseList();
-            cout<<"\tenter 0 to exit 1 for main menu : ";
-            cin>>ch;
-            if(ch == '1')
+        case 4:
+            int elementToInsertAfter;
+            cout<<"\tEnter the value to insert : ";
+            cin>>value;
+            cout<<"\tEnter the element to insert after : ";
+            cin>>elementToInsertAfter;
+            ob.insertValueAfter(elementToInsertAfter, value);
+
+            cout<<"\tpress \"1\" for main menu or \"0\" to exit : ";
+            cin>>choice;
+            if(choice == 1)
+                goto main;
+            else break;
+
+        case 5:
+            cout<<"\tEnter the value to delete : ";
+            cin>>value;
+            ob.deleteValue(value);
+
+            cout<<"\tpress \"1\" for main menu or \"0\" to exit : ";
+            cin>>choice;
+            if(choice == 1)
+                goto main;
+            else break;
+
+        case 6:
+            ob.reverseList();
+
+            cout<<"\tpress \"1\" for main menu or \"0\" to exit : ";
+            cin>>choice;
+            if(choice == 1)
                 goto main;
             else break;
 
 
 
-        case '5':
-            printList();
-            cout<<"\tenter 0 to exit 1 for main menu : ";
-            cin>>ch;
-            if(ch == '1')
-                goto main;
-            else break;
-
-        case '6':
-            deleteElement();
-            cout<<"\tenter 0 to exit 1 for main menu : ";
-            cin>>ch;
-            if(ch == '1')
-                goto main;
-            else break;
-
-        default: break;
+        default:
+            break;
 
     }
+
 }
